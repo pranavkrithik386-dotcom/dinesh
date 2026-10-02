@@ -1,0 +1,4090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>SmartStudy AI</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+:root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --text: #172033;
+    --muted: #6d7485;
+    --border: #e5e8ef;
+    --primary: #635bff;
+    --primary-dark: #5148e8;
+    --green: #19a974;
+    --red: #e5484d;
+    --yellow: #e99b00;
+    --shadow: 0 8px 30px rgba(20, 30, 60, 0.07);
+}
+
+body {
+    margin: 0;
+    font-family:
+        Inter,
+        ui-sans-serif,
+        system-ui,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+button,
+input,
+textarea,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app {
+    display: flex;
+    min-height: 100vh;
+}
+
+
+/* ============================================================
+   SIDEBAR
+============================================================ */
+
+.sidebar {
+    width: 250px;
+    background: #111827;
+    color: white;
+    padding: 20px 14px;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    overflow-y: auto;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px 24px;
+}
+
+.logo-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 12px;
+    background: #635bff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+}
+
+.logo-title {
+    font-weight: 800;
+    font-size: 17px;
+}
+
+.logo-subtitle {
+    font-size: 11px;
+    color: #9ca3af;
+    margin-top: 2px;
+}
+
+.nav-title {
+    color: #6b7280;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 14px 12px 7px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.nav-btn {
+    width: 100%;
+    border: none;
+    background: transparent;
+    color: #cbd5e1;
+    text-align: left;
+    padding: 11px 12px;
+    border-radius: 9px;
+    margin-bottom: 3px;
+    transition: 0.15s;
+}
+
+.nav-btn:hover {
+    background: #1f2937;
+    color: white;
+}
+
+.nav-btn.active {
+    background: #635bff;
+    color: white;
+}
+
+.sidebar-bottom {
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 15px;
+}
+
+.reset-btn {
+    width: 100%;
+    background: #1f2937;
+    color: #fca5a5;
+    border: 1px solid #374151;
+    padding: 10px;
+    border-radius: 9px;
+}
+
+
+/* ============================================================
+   MAIN
+============================================================ */
+
+.main {
+    margin-left: 250px;
+    width: calc(100% - 250px);
+    min-height: 100vh;
+}
+
+.topbar {
+    height: 70px;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 28px;
+    position: sticky;
+    top: 0;
+    z-index: 20;
+}
+
+.page-title {
+    font-size: 20px;
+    font-weight: 800;
+}
+
+.top-date {
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.content {
+    padding: 28px;
+    max-width: 1500px;
+    margin: auto;
+}
+
+
+/* ============================================================
+   COMMON
+============================================================ */
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: var(--shadow);
+}
+
+.grid {
+    display: grid;
+    gap: 18px;
+}
+
+.grid-2 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.grid-3 {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.grid-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.stat {
+    padding: 20px;
+}
+
+.stat-icon {
+    font-size: 24px;
+    margin-bottom: 12px;
+}
+
+.stat-value {
+    font-size: 28px;
+    font-weight: 800;
+}
+
+.stat-label {
+    color: var(--muted);
+    font-size: 13px;
+    margin-top: 4px;
+}
+
+.section-title {
+    font-size: 17px;
+    font-weight: 800;
+    margin-bottom: 15px;
+}
+
+.muted {
+    color: var(--muted);
+}
+
+.small {
+    font-size: 12px;
+}
+
+.btn {
+    border: none;
+    background: var(--primary);
+    color: white;
+    border-radius: 9px;
+    padding: 10px 15px;
+    font-weight: 700;
+}
+
+.btn:hover {
+    background: var(--primary-dark);
+}
+
+.btn-secondary {
+    background: #eef0f6;
+    color: #303746;
+}
+
+.btn-danger {
+    background: #fff0f0;
+    color: var(--red);
+}
+
+.btn-success {
+    background: #eafaf3;
+    color: var(--green);
+}
+
+.btn-warning {
+    background: #fff8e8;
+    color: #a86d00;
+}
+
+.actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    border: 1px solid var(--border);
+    background: white;
+    border-radius: 9px;
+    padding: 11px 12px;
+    outline: none;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+    border-color: var(--primary);
+}
+
+textarea {
+    resize: vertical;
+    min-height: 90px;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 6px;
+}
+
+.form-group {
+    margin-bottom: 13px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.form-row-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.empty {
+    text-align: center;
+    padding: 35px;
+    color: var(--muted);
+}
+
+
+/* ============================================================
+   TABLE
+============================================================ */
+
+.table-wrap {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 12px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+}
+
+th {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.badge-green {
+    background: #eafaf3;
+    color: #11845a;
+}
+
+.badge-red {
+    background: #fff0f0;
+    color: #c22d32;
+}
+
+.badge-yellow {
+    background: #fff7e4;
+    color: #a96c00;
+}
+
+.badge-blue {
+    background: #eef0ff;
+    color: #5148e8;
+}
+
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+
+.welcome {
+    background: linear-gradient(120deg, #635bff, #817bff);
+    color: white;
+    border-radius: 18px;
+    padding: 28px;
+    margin-bottom: 20px;
+}
+
+.welcome h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+}
+
+.welcome p {
+    margin: 0;
+    opacity: 0.88;
+}
+
+.today-class {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.period-number {
+    width: 34px;
+    height: 34px;
+    background: #eef0ff;
+    color: var(--primary);
+    border-radius: 9px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.class-left {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.quick-ai {
+    background: #111827;
+    color: white;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.quick-ai textarea {
+    margin-top: 12px;
+}
+
+
+/* ============================================================
+   ATTENDANCE
+============================================================ */
+
+.attendance-card {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.attendance-percent {
+    font-size: 27px;
+    font-weight: 900;
+}
+
+.progress {
+    height: 8px;
+    background: #edf0f5;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-inner {
+    height: 100%;
+    border-radius: 20px;
+}
+
+.good {
+    background: #19a974;
+}
+
+.warning {
+    background: #e99b00;
+}
+
+.danger {
+    background: #e5484d;
+}
+
+
+/* ============================================================
+   AI CHAT
+============================================================ */
+
+.chat-layout {
+    display: flex;
+    flex-direction: column;
+    height: calc(100vh - 126px);
+    min-height: 500px;
+}
+
+.chat-box {
+    flex: 1;
+    overflow-y: auto;
+    padding: 10px 5px 20px;
+}
+
+.message {
+    display: flex;
+    margin-bottom: 16px;
+}
+
+.message.user {
+    justify-content: flex-end;
+}
+
+.bubble {
+    max-width: 75%;
+    padding: 13px 15px;
+    border-radius: 15px;
+    line-height: 1.55;
+    font-size: 14px;
+    white-space: pre-wrap;
+}
+
+.message.ai .bubble {
+    background: white;
+    border: 1px solid var(--border);
+}
+
+.message.user .bubble {
+    background: var(--primary);
+    color: white;
+}
+
+.chat-composer {
+    display: flex;
+    gap: 8px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 15px;
+    padding: 8px;
+}
+
+.chat-composer textarea {
+    border: none;
+    resize: none;
+    min-height: 45px;
+    max-height: 130px;
+}
+
+.icon-btn {
+    border: none;
+    width: 43px;
+    height: 43px;
+    border-radius: 10px;
+    background: #eef0f6;
+}
+
+.send-btn {
+    background: var(--primary);
+    color: white;
+}
+
+.typing {
+    display: inline-flex;
+    gap: 4px;
+    padding: 10px;
+}
+
+.dot {
+    width: 6px;
+    height: 6px;
+    background: #9ca3af;
+    border-radius: 50%;
+    animation: bounce 1s infinite;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.15s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+@keyframes bounce {
+    0%, 80%, 100% {
+        transform: translateY(0);
+    }
+
+    40% {
+        transform: translateY(-5px);
+    }
+}
+
+
+/* ============================================================
+   SETUP MODAL
+============================================================ */
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.65);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+}
+
+.modal.show {
+    display: flex;
+}
+
+.modal-card {
+    width: min(650px, 100%);
+    max-height: 90vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 20px;
+    padding: 25px;
+}
+
+.modal-title {
+    font-size: 23px;
+    font-weight: 900;
+    margin-bottom: 6px;
+}
+
+
+/* ============================================================
+   MOBILE
+============================================================ */
+
+.mobile-menu {
+    display: none;
+    border: none;
+    background: #eef0f6;
+    width: 40px;
+    height: 40px;
+    border-radius: 9px;
+}
+
+@media (max-width: 1000px) {
+
+    .grid-4 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .grid-3 {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 760px) {
+
+    .sidebar {
+        transform: translateX(-100%);
+        transition: 0.2s;
+        z-index: 50;
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .main {
+        margin-left: 0;
+        width: 100%;
+    }
+
+    .mobile-menu {
+        display: block;
+    }
+
+    .topbar {
+        padding: 0 15px;
+    }
+
+    .content {
+        padding: 15px;
+    }
+
+    .grid-2,
+    .grid-3,
+    .grid-4,
+    .form-row,
+    .form-row-3 {
+        grid-template-columns: 1fr;
+    }
+
+    .welcome h1 {
+        font-size: 22px;
+    }
+
+    .bubble {
+        max-width: 90%;
+    }
+
+    .top-date {
+        display: none;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<!-- ============================================================
+     SIDEBAR
+============================================================ -->
+
+<aside class="sidebar" id="sidebar">
+
+    <div class="logo">
+        <div class="logo-icon">🎓</div>
+
+        <div>
+            <div class="logo-title">SmartStudy AI</div>
+            <div class="logo-subtitle">College Student OS</div>
+        </div>
+    </div>
+
+    <div class="nav-title">Main</div>
+
+    <button class="nav-btn active" onclick="showPage('dashboard', this)">
+        🏠 Dashboard
+    </button>
+
+    <button class="nav-btn" onclick="showPage('timetable', this)">
+        📅 Timetable
+    </button>
+
+    <button class="nav-btn" onclick="showPage('attendance', this)">
+        📊 Attendance
+    </button>
+
+    <button class="nav-btn" onclick="showPage('assignments', this)">
+        📝 Assignments
+    </button>
+
+    <button class="nav-btn" onclick="showPage('exams', this)">
+        🧪 Exams
+    </button>
+
+    <button class="nav-btn" onclick="showPage('materials', this)">
+        📚 Materials
+    </button>
+
+    <div class="nav-title">AI</div>
+
+    <button class="nav-btn" onclick="showPage('ai', this)">
+        🤖 AI Tutor
+    </button>
+
+    <button class="nav-btn" onclick="generateStudyPlan()">
+        🧠 Study Planner
+    </button>
+
+    <div class="sidebar-bottom">
+        <button class="reset-btn" onclick="resetApplication()">
+            Reset All Data
+        </button>
+    </div>
+
+</aside>
+
+
+<!-- ============================================================
+     MAIN
+============================================================ -->
+
+<main class="main">
+
+<header class="topbar">
+
+    <div style="display:flex;align-items:center;gap:12px">
+
+        <button
+            class="mobile-menu"
+            onclick="toggleSidebar()"
+        >
+            ☰
+        </button>
+
+        <div class="page-title" id="pageTitle">
+            Dashboard
+        </div>
+
+    </div>
+
+    <div class="top-date" id="topDate"></div>
+
+</header>
+
+
+<div class="content">
+
+
+<!-- ============================================================
+     DASHBOARD
+============================================================ -->
+
+<section class="page active" id="page-dashboard">
+
+    <div class="welcome">
+
+        <h1 id="welcomeTitle">
+            Good morning 👋
+        </h1>
+
+        <p id="welcomeSubtitle">
+            Let's make today productive.
+        </p>
+
+    </div>
+
+
+    <div class="grid grid-4" id="dashboardStats">
+
+        <div class="card stat">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Today's Classes</div>
+        </div>
+
+        <div class="card stat">
+            <div class="stat-icon">📝</div>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Pending Assignments</div>
+        </div>
+
+        <div class="card stat">
+            <div class="stat-icon">🧪</div>
+            <div class="stat-value">0</div>
+            <div class="stat-label">Upcoming Exams</div>
+        </div>
+
+        <div class="card stat">
+            <div class="stat-icon">📊</div>
+            <div class="stat-value">0%</div>
+            <div class="stat-label">Average Attendance</div>
+        </div>
+
+    </div>
+
+
+    <br>
+
+
+    <div class="grid grid-2">
+
+        <div class="card">
+
+            <div class="section-title">
+                📅 Today's Timetable
+            </div>
+
+            <div id="todayClasses">
+                <div class="empty">
+                    No classes added for today.
+                </div>
+            </div>
+
+        </div>
+
+
+        <div class="card">
+
+            <div class="section-title">
+                ⚠️ Needs Attention
+            </div>
+
+            <div id="attentionList">
+                <div class="empty">
+                    Nothing needs attention.
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <br>
+
+
+    <div class="grid grid-2">
+
+        <div class="card">
+
+            <div class="section-title">
+                🧪 Upcoming Exams
+            </div>
+
+            <div id="dashboardExams"></div>
+
+        </div>
+
+
+        <div class="quick-ai">
+
+            <div class="section-title">
+                🤖 Ask SmartStudy AI
+            </div>
+
+            <p style="color:#cbd5e1">
+                Ask about your studies, timetable, assignments,
+                attendance or exams.
+            </p>
+
+            <textarea
+                id="quickAIInput"
+                placeholder="Example: How should I study C for my exam?"
+            ></textarea>
+
+            <br>
+
+            <button
+                class="btn"
+                onclick="sendQuickAI()"
+            >
+                Ask AI
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ============================================================
+     TIMETABLE
+============================================================ -->
+
+<section class="page" id="page-timetable">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;gap:10px;flex-wrap:wrap">
+
+        <div>
+            <h2 style="margin:0">📅 Weekly Timetable</h2>
+            <p class="muted">
+                Configure your college periods and weekly classes.
+            </p>
+        </div>
+
+        <div class="actions">
+
+            <button
+                class="btn"
+                onclick="openTimetableModal()"
+            >
+                + Add Period
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                onclick="openSetup()"
+            >
+                ⚙ College Setup
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="section-title">
+            Weekly Schedule
+        </div>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+
+                <tr>
+                    <th>Day</th>
+                    <th>Period</th>
+                    <th>Time</th>
+                    <th>Subject</th>
+                    <th>Teacher</th>
+                    <th>Room</th>
+                    <th></th>
+                </tr>
+
+                </thead>
+
+                <tbody id="timetableTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+
+    <br>
+
+
+    <div class="card">
+
+        <div class="section-title">
+            📤 Upload Weekly Timetable
+        </div>
+
+        <p class="muted">
+            Upload your college timetable image, PDF, CSV or Excel
+            file. The upload area is ready for timetable importing.
+        </p>
+
+        <input
+            type="file"
+            id="timetableFile"
+            accept=".pdf,.png,.jpg,.jpeg,.csv,.xlsx,.xls"
+        >
+
+        <br><br>
+
+        <button
+            class="btn btn-secondary"
+            onclick="processTimetableUpload()"
+        >
+            Process Timetable
+        </button>
+
+        <p
+            id="uploadStatus"
+            class="small muted"
+        ></p>
+
+    </div>
+
+</section>
+
+
+<!-- ============================================================
+     ATTENDANCE
+============================================================ -->
+
+<section class="page" id="page-attendance">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+
+        <div>
+            <h2 style="margin:0">📊 Attendance</h2>
+
+            <p class="muted">
+                Track attendance period by period.
+            </p>
+        </div>
+
+        <button
+            class="btn"
+            onclick="openAttendanceModal()"
+        >
+            + Mark Attendance
+        </button>
+
+    </div>
+
+    <br>
+
+    <div
+        class="grid grid-3"
+        id="attendanceCards"
+    ></div>
+
+    <br>
+
+    <div class="card">
+
+        <div class="section-title">
+            Attendance Records
+        </div>
+
+        <div class="table-wrap">
+
+            <table>
+
+                <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Period</th>
+                    <th>Subject</th>
+                    <th>Status</th>
+                    <th></th>
+                </tr>
+                </thead>
+
+                <tbody id="attendanceTable"></tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+<!-- ============================================================
+     ASSIGNMENTS
+============================================================ -->
+
+<section class="page" id="page-assignments">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+
+        <div>
+            <h2 style="margin:0">📝 Assignments</h2>
+            <p class="muted">
+                Never miss another college submission.
+            </p>
+        </div>
+
+        <button
+            class="btn"
+            onclick="openAssignmentModal()"
+        >
+            + Add Assignment
+        </button>
+
+    </div>
+
+    <br>
+
+    <div
+        class="grid grid-3"
+        id="assignmentCards"
+    ></div>
+
+</section>
+
+
+<!-- ============================================================
+     EXAMS
+============================================================ -->
+
+<section class="page" id="page-exams">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+
+        <div>
+            <h2 style="margin:0">🧪 Exams</h2>
+
+            <p class="muted">
+                Keep your complete exam schedule here.
+            </p>
+        </div>
+
+        <button
+            class="btn"
+            onclick="openExamModal()"
+        >
+            + Add Exam
+        </button>
+
+    </div>
+
+    <br>
+
+    <div
+        class="grid grid-3"
+        id="examCards"
+    ></div>
+
+</section>
+
+
+<!-- ============================================================
+     MATERIALS
+============================================================ -->
+
+<section class="page" id="page-materials">
+
+    <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px">
+
+        <div>
+            <h2 style="margin:0">📚 Study Materials</h2>
+
+            <p class="muted">
+                Keep useful notes, PDFs and resources in one place.
+            </p>
+        </div>
+
+        <button
+            class="btn"
+            onclick="openMaterialModal()"
+        >
+            + Add Material
+        </button>
+
+    </div>
+
+    <br>
+
+    <div
+        class="grid grid-3"
+        id="materialCards"
+    ></div>
+
+</section>
+
+
+<!-- ============================================================
+     AI
+============================================================ -->
+
+<section class="page" id="page-ai">
+
+    <div class="chat-layout">
+
+        <div
+            class="chat-box"
+            id="chatBox"
+        ></div>
+
+        <div class="chat-composer">
+
+            <button
+                class="icon-btn"
+                onclick="startVoiceInput()"
+                title="Voice input"
+            >
+                🎤
+            </button>
+
+            <textarea
+                id="chatInput"
+                placeholder="Ask your AI tutor..."
+                onkeydown="handleChatKey(event)"
+            ></textarea>
+
+            <button
+                class="icon-btn send-btn"
+                onclick="sendChat()"
+            >
+                ➤
+            </button>
+
+        </div>
+
+        <div
+            class="actions"
+            style="margin-top:8px"
+        >
+
+            <button
+                class="btn btn-secondary"
+                onclick="clearChat()"
+            >
+                New Chat
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                onclick="generateStudyPlan()"
+            >
+                🧠 Generate Study Plan
+            </button>
+
+            <button
+                class="btn btn-secondary"
+                onclick="generateMCQ()"
+            >
+                ❓ Practice MCQ
+            </button>
+
+        </div>
+
+    </div>
+
+</section>
+
+</div>
+
+</main>
+
+</div>
+
+
+<!-- ============================================================
+     SETUP MODAL
+============================================================ -->
+
+<div class="modal" id="setupModal">
+
+<div class="modal-card">
+
+    <div class="modal-title">
+        ⚙️ College Setup
+    </div>
+
+    <p class="muted">
+        Tell SmartStudy how your college timetable works.
+    </p>
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Student Name</label>
+
+            <input
+                id="setupStudent"
+                placeholder="Your name"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>College Name</label>
+
+            <input
+                id="setupCollege"
+                placeholder="College name"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Course</label>
+
+            <input
+                id="setupCourse"
+                placeholder="B.Sc Computer Science"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Year</label>
+
+            <input
+                id="setupYear"
+                placeholder="2"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Semester</label>
+
+            <input
+                id="setupSemester"
+                placeholder="3"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Working Days</label>
+
+            <input
+                id="setupDays"
+                type="number"
+                min="1"
+                max="7"
+                value="6"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-row-3">
+
+        <div class="form-group">
+
+            <label>Periods / Day</label>
+
+            <input
+                id="setupPeriods"
+                type="number"
+                min="1"
+                max="15"
+                value="7"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Period Duration (minutes)</label>
+
+            <input
+                id="setupDuration"
+                type="number"
+                min="20"
+                max="180"
+                value="50"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Minimum Attendance %</label>
+
+            <input
+                id="setupAttendance"
+                type="number"
+                min="1"
+                max="100"
+                value="75"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>College Start Time</label>
+
+        <input
+            id="setupStart"
+            type="time"
+            value="08:30"
+        >
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="btn"
+            onclick="saveSetup()"
+        >
+            Save Setup
+        </button>
+
+        <button
+            class="btn btn-secondary"
+            onclick="closeModal('setupModal')"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- ============================================================
+     TIMETABLE MODAL
+============================================================ -->
+
+<div class="modal" id="timetableModal">
+
+<div class="modal-card">
+
+    <div class="modal-title">
+        📅 Add Timetable Period
+    </div>
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Day</label>
+
+            <select id="ttDay">
+
+                <option>Monday</option>
+                <option>Tuesday</option>
+                <option>Wednesday</option>
+                <option>Thursday</option>
+                <option>Friday</option>
+                <option>Saturday</option>
+                <option>Sunday</option>
+
+            </select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Period</label>
+
+            <input
+                id="ttPeriod"
+                type="number"
+                min="1"
+                value="1"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Subject</label>
+
+        <input
+            id="ttSubject"
+            placeholder="C Programming"
+        >
+
+    </div>
+
+
+    <div class="form-row-3">
+
+        <div class="form-group">
+
+            <label>Start Time</label>
+
+            <input
+                id="ttStart"
+                type="time"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>End Time</label>
+
+            <input
+                id="ttEnd"
+                type="time"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Room</label>
+
+            <input
+                id="ttRoom"
+                placeholder="Lab 2"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Teacher</label>
+
+        <input
+            id="ttTeacher"
+            placeholder="Teacher name"
+        >
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="btn"
+            onclick="saveTimetable()"
+        >
+            Add Period
+        </button>
+
+        <button
+            class="btn btn-secondary"
+            onclick="closeModal('timetableModal')"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- ============================================================
+     ATTENDANCE MODAL
+============================================================ -->
+
+<div class="modal" id="attendanceModal">
+
+<div class="modal-card">
+
+    <div class="modal-title">
+        📊 Mark Attendance
+    </div>
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Date</label>
+
+            <input
+                id="attDate"
+                type="date"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Period</label>
+
+            <input
+                id="attPeriod"
+                type="number"
+                value="1"
+                min="1"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Subject</label>
+
+        <select id="attSubject"></select>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Status</label>
+
+        <select id="attStatus">
+
+            <option>Present</option>
+            <option>Absent</option>
+
+        </select>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="btn"
+            onclick="saveAttendance()"
+        >
+            Save Attendance
+        </button>
+
+        <button
+            class="btn btn-secondary"
+            onclick="closeModal('attendanceModal')"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- ============================================================
+     ASSIGNMENT MODAL
+============================================================ -->
+
+<div class="modal" id="assignmentModal">
+
+<div class="modal-card">
+
+    <div class="modal-title">
+        📝 Add Assignment
+    </div>
+
+    <div class="form-group">
+
+        <label>Title</label>
+
+        <input
+            id="assignmentTitle"
+            placeholder="C Pointer Assignment"
+        >
+
+    </div>
+
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Subject</label>
+
+            <select id="assignmentSubject"></select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Due Date</label>
+
+            <input
+                id="assignmentDue"
+                type="date"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Description</label>
+
+        <textarea
+            id="assignmentDescription"
+            placeholder="What do you need to do?"
+        ></textarea>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Priority</label>
+
+        <select id="assignmentPriority">
+
+            <option>Low</option>
+            <option selected>Medium</option>
+            <option>High</option>
+
+        </select>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="btn"
+            onclick="saveAssignment()"
+        >
+            Add Assignment
+        </button>
+
+        <button
+            class="btn btn-secondary"
+            onclick="closeModal('assignmentModal')"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- ============================================================
+     EXAM MODAL
+============================================================ -->
+
+<div class="modal" id="examModal">
+
+<div class="modal-card">
+
+    <div class="modal-title">
+        🧪 Add Exam
+    </div>
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Exam Name</label>
+
+            <input
+                id="examName"
+                placeholder="Internal Exam"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Subject</label>
+
+            <select id="examSubject"></select>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-row-3">
+
+        <div class="form-group">
+
+            <label>Date</label>
+
+            <input
+                id="examDate"
+                type="date"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Time</label>
+
+            <input
+                id="examTime"
+                type="time"
+            >
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Venue</label>
+
+            <input
+                id="examVenue"
+                placeholder="Hall 204"
+            >
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Notes</label>
+
+        <textarea
+            id="examNotes"
+            placeholder="Important topics..."
+        ></textarea>
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="btn"
+            onclick="saveExam()"
+        >
+            Add Exam
+        </button>
+
+        <button
+            class="btn btn-secondary"
+            onclick="closeModal('examModal')"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<!-- ============================================================
+     MATERIAL MODAL
+============================================================ -->
+
+<div class="modal" id="materialModal">
+
+<div class="modal-card">
+
+    <div class="modal-title">
+        📚 Add Study Material
+    </div>
+
+    <div class="form-group">
+
+        <label>Material Name</label>
+
+        <input
+            id="materialName"
+            placeholder="C Programming Notes"
+        >
+
+    </div>
+
+
+    <div class="form-row">
+
+        <div class="form-group">
+
+            <label>Subject</label>
+
+            <select id="materialSubject"></select>
+
+        </div>
+
+        <div class="form-group">
+
+            <label>Type</label>
+
+            <select id="materialType">
+
+                <option>Note</option>
+                <option>PDF</option>
+                <option>Video</option>
+                <option>Question Paper</option>
+                <option>Website</option>
+
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="form-group">
+
+        <label>Link / File Reference</label>
+
+        <input
+            id="materialUrl"
+            placeholder="Optional"
+        >
+
+    </div>
+
+
+    <div class="actions">
+
+        <button
+            class="btn"
+            onclick="saveMaterial()"
+        >
+            Add Material
+        </button>
+
+        <button
+            class="btn btn-secondary"
+            onclick="closeModal('materialModal')"
+        >
+            Cancel
+        </button>
+
+    </div>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   GLOBAL STATE
+============================================================ */
+
+let dashboardData = {};
+let subjects = [];
+let recognition = null;
+
+
+/* ============================================================
+   API
+============================================================ */
+
+async function api(url, options = {}) {
+
+    const response = await fetch(url, {
+        headers: {
+            "Content-Type": "application/json"
+        },
+        ...options
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(
+            data.error || "Something went wrong"
+        );
+    }
+
+    return data;
+}
+
+
+/* ============================================================
+   INITIAL LOAD
+============================================================ */
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+    updateDate();
+
+    await loadSubjects();
+
+    await loadDashboard();
+
+    await loadTimetable();
+
+    await loadAttendance();
+
+    await loadAssignments();
+
+    await loadExams();
+
+    await loadMaterials();
+
+    await loadChat();
+
+    const settings = await api("/api/settings");
+
+    if (!settings.student_name) {
+        setTimeout(() => {
+            openSetup();
+        }, 500);
+    }
+});
+
+
+/* ============================================================
+   DATE
+============================================================ */
+
+function updateDate() {
+
+    const now = new Date();
+
+    document.getElementById("topDate").textContent =
+        now.toLocaleDateString(
+            "en-IN",
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long",
+                year: "numeric"
+            }
+        );
+}
+
+
+/* ============================================================
+   NAVIGATION
+============================================================ */
+
+function showPage(page, button = null) {
+
+    document.querySelectorAll(".page")
+        .forEach(x => x.classList.remove("active"));
+
+    document
+        .getElementById("page-" + page)
+        .classList.add("active");
+
+    document.querySelectorAll(".nav-btn")
+        .forEach(x => x.classList.remove("active"));
+
+    if (button) {
+        button.classList.add("active");
+    }
+
+    const titles = {
+        dashboard: "Dashboard",
+        timetable: "Timetable",
+        attendance: "Attendance",
+        assignments: "Assignments",
+        exams: "Exams",
+        materials: "Study Materials",
+        ai: "AI Tutor"
+    };
+
+    document.getElementById("pageTitle").textContent =
+        titles[page] || "SmartStudy AI";
+
+    if (window.innerWidth < 760) {
+        document
+            .getElementById("sidebar")
+            .classList.remove("open");
+    }
+}
+
+
+function toggleSidebar() {
+
+    document
+        .getElementById("sidebar")
+        .classList.toggle("open");
+}
+
+
+/* ============================================================
+   MODALS
+============================================================ */
+
+function openModal(id) {
+
+    document
+        .getElementById(id)
+        .classList.add("show");
+}
+
+
+function closeModal(id) {
+
+    document
+        .getElementById(id)
+        .classList.remove("show");
+}
+
+
+/* ============================================================
+   SETUP
+============================================================ */
+
+async function openSetup() {
+
+    const settings = await api("/api/settings");
+
+    document.getElementById("setupStudent").value =
+        settings.student_name || "";
+
+    document.getElementById("setupCollege").value =
+        settings.college_name || "";
+
+    document.getElementById("setupCourse").value =
+        settings.course || "";
+
+    document.getElementById("setupYear").value =
+        settings.year || "";
+
+    document.getElementById("setupSemester").value =
+        settings.semester || "";
+
+    document.getElementById("setupDays").value =
+        settings.working_days || 6;
+
+    document.getElementById("setupPeriods").value =
+        settings.periods_per_day || 7;
+
+    document.getElementById("setupDuration").value =
+        settings.period_duration || 50;
+
+    document.getElementById("setupStart").value =
+        settings.college_start_time || "08:30";
+
+    document.getElementById("setupAttendance").value =
+        settings.attendance_minimum || 75;
+
+    openModal("setupModal");
+}
+
+
+async function saveSetup() {
+
+    const body = {
+
+        student_name:
+            document.getElementById("setupStudent").value,
+
+        college_name:
+            document.getElementById("setupCollege").value,
+
+        course:
+            document.getElementById("setupCourse").value,
+
+        year:
+            document.getElementById("setupYear").value,
+
+        semester:
+            document.getElementById("setupSemester").value,
+
+        working_days:
+            Number(document.getElementById("setupDays").value),
+
+        periods_per_day:
+            Number(document.getElementById("setupPeriods").value),
+
+        period_duration:
+            Number(document.getElementById("setupDuration").value),
+
+        college_start_time:
+            document.getElementById("setupStart").value,
+
+        attendance_minimum:
+            Number(document.getElementById("setupAttendance").value)
+    };
+
+    await api("/api/settings", {
+        method: "POST",
+        body: JSON.stringify(body)
+    });
+
+    closeModal("setupModal");
+
+    await loadDashboard();
+
+    alert("College setup saved.");
+}
+
+
+/* ============================================================
+   SUBJECTS
+============================================================ */
+
+async function loadSubjects() {
+
+    subjects = await api("/api/subjects");
+
+    fillSubjectSelects();
+}
+
+
+function fillSubjectSelects() {
+
+    const ids = [
+        "attSubject",
+        "assignmentSubject",
+        "examSubject",
+        "materialSubject"
+    ];
+
+    ids.forEach(id => {
+
+        const select = document.getElementById(id);
+
+        if (!select) return;
+
+        select.innerHTML = "";
+
+        if (!subjects.length) {
+
+            const option =
+                document.createElement("option");
+
+            option.value = "";
+            option.textContent =
+                "Add subjects first";
+
+            select.appendChild(option);
+
+            return;
+        }
+
+        subjects.forEach(subject => {
+
+            const option =
+                document.createElement("option");
+
+            option.value = subject.name;
+            option.textContent = subject.name;
+
+            select.appendChild(option);
+        });
+    });
+}
+
+
+/* ============================================================
+   DASHBOARD
+============================================================ */
+
+async function loadDashboard() {
+
+    dashboardData =
+        await api("/api/dashboard");
+
+    const settings =
+        dashboardData.settings || {};
+
+    const name =
+        settings.student_name || "Student";
+
+    document.getElementById("welcomeTitle").textContent =
+        `Good morning, ${name} 👋`;
+
+    document.getElementById("welcomeSubtitle").textContent =
+        settings.college_name
+            ? `${settings.college_name} • ${settings.course || "College Student"}`
+            : "Let's make today productive.";
+
+
+    const classes =
+        dashboardData.todays_classes || [];
+
+    const assignments =
+        dashboardData.pending_assignments || [];
+
+    const exams =
+        dashboardData.upcoming_exams || [];
+
+    const attendance =
+        dashboardData.attendance || [];
+
+
+    let average = 0;
+
+    if (attendance.length) {
+
+        average =
+            attendance.reduce(
+                (sum, x) =>
+                    sum + Number(x.percentage || 0),
+                0
+            ) / attendance.length;
+
+        average =
+            Math.round(average * 10) / 10;
+    }
+
+
+    document.getElementById("dashboardStats").innerHTML = `
+
+        <div class="card stat">
+
+            <div class="stat-icon">📅</div>
+
+            <div class="stat-value">
+                ${classes.length}
+            </div>
+
+            <div class="stat-label">
+                Today's Classes
+            </div>
+
+        </div>
+
+        <div class="card stat">
+
+            <div class="stat-icon">📝</div>
+
+            <div class="stat-value">
+                ${assignments.length}
+            </div>
+
+            <div class="stat-label">
+                Pending Assignments
+            </div>
+
+        </div>
+
+        <div class="card stat">
+
+            <div class="stat-icon">🧪</div>
+
+            <div class="stat-value">
+                ${exams.length}
+            </div>
+
+            <div class="stat-label">
+                Upcoming Exams
+            </div>
+
+        </div>
+
+        <div class="card stat">
+
+            <div class="stat-icon">📊</div>
+
+            <div class="stat-value">
+                ${average}%
+            </div>
+
+            <div class="stat-label">
+                Average Attendance
+            </div>
+
+        </div>
+    `;
+
+
+    renderTodayClasses(classes);
+
+    renderAttention(
+        attendance,
+        assignments,
+        exams,
+        settings
+    );
+
+    renderDashboardExams(exams);
+}
+
+
+function renderTodayClasses(classes) {
+
+    const container =
+        document.getElementById("todayClasses");
+
+    if (!classes.length) {
+
+        container.innerHTML = `
+            <div class="empty">
+                No classes added for today.
+                <br><br>
+                Add your weekly timetable.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        classes.map(item => `
+
+            <div class="today-class">
+
+                <div class="class-left">
+
+                    <div class="period-number">
+                        ${item.period}
+                    </div>
+
+                    <div>
+
+                        <strong>
+                            ${escapeHtml(item.subject)}
+                        </strong>
+
+                        <div class="small muted">
+                            ${item.start_time || ""}
+                            ${item.end_time ? " - " + item.end_time : ""}
+                            ${item.room ? " • " + item.room : ""}
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <button
+                    class="btn btn-success"
+                    onclick="quickMarkAttendance('${escapeAttr(item.subject)}', ${item.period})"
+                >
+                    Present
+                </button>
+
+            </div>
+
+        `).join("");
+}
+
+
+function renderAttention(
+    attendance,
+    assignments,
+    exams,
+    settings
+) {
+
+    const container =
+        document.getElementById("attentionList");
+
+    const items = [];
+
+    const minimum =
+        Number(settings.attendance_minimum || 75);
+
+
+    attendance.forEach(item => {
+
+        if (
+            item.conducted > 0 &&
+            item.percentage < minimum
+        ) {
+
+            items.push(`
+                <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+                    <strong>⚠️ ${escapeHtml(item.subject)}</strong>
+
+                    <div class="small muted">
+                        Attendance is ${item.percentage}%,
+                        below your ${minimum}% target.
+                    </div>
+                </div>
+            `);
+        }
+    });
+
+
+    assignments.forEach(item => {
+
+        if (item.due_date) {
+
+            const due =
+                new Date(item.due_date);
+
+            const today =
+                new Date();
+
+            const difference =
+                Math.ceil(
+                    (due - today) /
+                    (1000 * 60 * 60 * 24)
+                );
+
+            if (difference <= 2) {
+
+                items.push(`
+                    <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+                        <strong>📝 ${escapeHtml(item.title)}</strong>
+
+                        <div class="small muted">
+                            Due ${difference <= 0 ? "today/overdue" : "soon"}.
+                        </div>
+                    </div>
+                `);
+            }
+        }
+    });
+
+
+    if (!items.length) {
+
+        container.innerHTML = `
+            <div class="empty">
+                🎉 Nothing urgent right now.
+            </div>
+        `;
+
+    } else {
+
+        container.innerHTML =
+            items.slice(0, 6).join("");
+    }
+}
+
+
+function renderDashboardExams(exams) {
+
+    const container =
+        document.getElementById("dashboardExams");
+
+    if (!exams.length) {
+
+        container.innerHTML = `
+            <div class="empty">
+                No upcoming exams.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        exams.slice(0, 5).map(exam => `
+
+            <div style="padding:12px 0;border-bottom:1px solid var(--border)">
+
+                <strong>
+                    ${escapeHtml(exam.subject)}
+                </strong>
+
+                <div class="small muted">
+                    ${escapeHtml(exam.name)}
+                    • ${exam.date}
+                    ${exam.time ? " • " + exam.time : ""}
+                </div>
+
+            </div>
+
+        `).join("");
+}
+
+
+/* ============================================================
+   TIMETABLE
+============================================================ */
+
+function openTimetableModal() {
+
+    document.getElementById("ttPeriod").value = 1;
+
+    document.getElementById("ttSubject").value = "";
+
+    document.getElementById("ttTeacher").value = "";
+
+    document.getElementById("ttRoom").value = "";
+
+    document.getElementById("ttStart").value = "";
+
+    document.getElementById("ttEnd").value = "";
+
+    openModal("timetableModal");
+}
+
+
+async function saveTimetable() {
+
+    const item = {
+
+        day:
+            document.getElementById("ttDay").value,
+
+        period:
+            Number(
+                document.getElementById("ttPeriod").value
+            ),
+
+        subject:
+            document.getElementById("ttSubject").value,
+
+        teacher:
+            document.getElementById("ttTeacher").value,
+
+        room:
+            document.getElementById("ttRoom").value,
+
+        start_time:
+            document.getElementById("ttStart").value,
+
+        end_time:
+            document.getElementById("ttEnd").value
+    };
+
+
+    if (!item.subject.trim()) {
+
+        alert("Enter a subject.");
+
+        return;
+    }
+
+
+    await api("/api/timetable", {
+        method: "POST",
+        body: JSON.stringify(item)
+    });
+
+
+    closeModal("timetableModal");
+
+    await loadTimetable();
+
+    await loadDashboard();
+}
+
+
+async function loadTimetable() {
+
+    const timetable =
+        await api("/api/timetable");
+
+    const tbody =
+        document.getElementById("timetableTable");
+
+    if (!timetable.length) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="7" class="empty">
+                    No timetable entries yet.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    tbody.innerHTML =
+        timetable.map(item => `
+
+            <tr>
+
+                <td>
+                    <strong>${item.day}</strong>
+                </td>
+
+                <td>
+                    P${item.period}
+                </td>
+
+                <td>
+                    ${item.start_time || "-"}
+                    ${item.end_time ? " - " + item.end_time : ""}
+                </td>
+
+                <td>
+                    ${escapeHtml(item.subject)}
+                </td>
+
+                <td>
+                    ${escapeHtml(item.teacher || "-")}
+                </td>
+
+                <td>
+                    ${escapeHtml(item.room || "-")}
+                </td>
+
+                <td>
+
+                    <button
+                        class="btn btn-danger"
+                        onclick="deleteTimetable(${item.id})"
+                    >
+                        Delete
+                    </button>
+
+                </td>
+
+            </tr>
+
+        `).join("");
+}
+
+
+async function deleteTimetable(id) {
+
+    if (!confirm("Delete this timetable entry?")) {
+        return;
+    }
+
+    await api(
+        `/api/timetable/${id}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+    await loadTimetable();
+
+    await loadDashboard();
+}
+
+
+function processTimetableUpload() {
+
+    const file =
+        document.getElementById("timetableFile").files[0];
+
+    const status =
+        document.getElementById("uploadStatus");
+
+    if (!file) {
+
+        status.textContent =
+            "Please choose a timetable file first.";
+
+        return;
+    }
+
+    /*
+       Browser-only version.
+
+       The file picker is ready for PDF/image/CSV/Excel.
+       Actual OCR/PDF/Excel extraction should be connected
+       to a backend parser later.
+    */
+
+    status.textContent =
+        `${file.name} selected. For automatic timetable extraction, connect the uploaded file to an OCR/parser service.`;
+}
+
+
+/* ============================================================
+   ATTENDANCE
+============================================================ */
+
+function openAttendanceModal() {
+
+    document.getElementById("attDate").value =
+        today_date_local();
+
+    fillSubjectSelects();
+
+    openModal("attendanceModal");
+}
+
+
+function today_date_local() {
+
+    const d = new Date();
+
+    const month =
+        String(d.getMonth() + 1).padStart(2, "0");
+
+    const day =
+        String(d.getDate()).padStart(2, "0");
+
+    return `${d.getFullYear()}-${month}-${day}`;
+}
+
+
+async function saveAttendance() {
+
+    const item = {
+
+        date:
+            document.getElementById("attDate").value,
+
+        period:
+            Number(
+                document.getElementById("attPeriod").value
+            ),
+
+        subject:
+            document.getElementById("attSubject").value,
+
+        status:
+            document.getElementById("attStatus").value
+    };
+
+
+    if (!item.subject) {
+
+        alert("Add a subject first.");
+
+        return;
+    }
+
+
+    await api("/api/attendance", {
+        method: "POST",
+        body: JSON.stringify(item)
+    });
+
+
+    closeModal("attendanceModal");
+
+    await loadAttendance();
+
+    await loadDashboard();
+}
+
+
+async function quickMarkAttendance(
+    subject,
+    period
+) {
+
+    await api("/api/attendance/mark", {
+
+        method: "POST",
+
+        body: JSON.stringify({
+
+            date: today_date_local(),
+
+            day:
+                new Date()
+                    .toLocaleDateString(
+                        "en-US",
+                        { weekday: "long" }
+                    ),
+
+            period: period,
+
+            subject: subject,
+
+            status: "Present"
+        })
+    });
+
+
+    await loadAttendance();
+
+    await loadDashboard();
+}
+
+
+async function loadAttendance() {
+
+    const data =
+        await api("/api/attendance");
+
+
+    const cards =
+        document.getElementById("attendanceCards");
+
+
+    if (!data.summary.length) {
+
+        cards.innerHTML = `
+            <div class="card empty">
+                No attendance records yet.
+                <br><br>
+                Start marking your period attendance.
+            </div>
+        `;
+
+    } else {
+
+        cards.innerHTML =
+            data.summary.map(item => {
+
+                const percent =
+                    Number(item.percentage || 0);
+
+                let className =
+                    "good";
+
+                if (
+                    percent <
+                    Number(data.minimum || 75)
+                ) {
+
+                    className =
+                        "danger";
+
+                } else if (
+                    percent <
+                    Number(data.minimum || 75) + 10
+                ) {
+
+                    className =
+                        "warning";
+                }
+
+
+                return `
+
+                    <div class="card">
+
+                        <div class="attendance-card">
+
+                            <div>
+
+                                <strong>
+                                    ${escapeHtml(item.subject)}
+                                </strong>
+
+                                <div class="small muted">
+                                    ${item.attended}
+                                    / ${item.conducted}
+                                    classes
+                                </div>
+
+                            </div>
+
+                            <div
+                                class="attendance-percent"
+                            >
+                                ${percent}%
+                            </div>
+
+                        </div>
+
+
+                        <div class="progress">
+
+                            <div
+                                class="progress-inner ${className}"
+                                style="width:${Math.min(percent,100)}%"
+                            ></div>
+
+                        </div>
+
+
+                        <br>
+
+                        <button
+                            class="btn btn-secondary"
+                            onclick="attendanceCalculation('${escapeAttr(item.subject)}')"
+                        >
+                            Calculate
+                        </button>
+
+                    </div>
+                `;
+
+            }).join("");
+    }
+
+
+    const tbody =
+        document.getElementById("attendanceTable");
+
+
+    if (!data.records.length) {
+
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty">
+                    No attendance records.
+                </td>
+            </tr>
+        `;
+
+        return;
+    }
+
+
+    tbody.innerHTML =
+        data.records
+            .slice()
+            .reverse()
+            .map(item => `
+
+                <tr>
+
+                    <td>
+                        ${item.date}
+                    </td>
+
+                    <td>
+                        P${item.period}
+                    </td>
+
+                    <td>
+                        ${escapeHtml(item.subject)}
+                    </td>
+
+                    <td>
+
+                        <span class="badge ${
+                            item.status === "Present"
+                                ? "badge-green"
+                                : "badge-red"
+                        }">
+
+                            ${item.status}
+
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <button
+                            class="btn btn-danger"
+                            onclick="deleteAttendance(${item.id})"
+                        >
+                            Delete
+                        </button>
+
+                    </td>
+
+                </tr>
+
+            `).join("");
+}
+
+
+async function deleteAttendance(id) {
+
+    await api(
+        `/api/attendance/${id}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+    await loadAttendance();
+
+    await loadDashboard();
+}
+
+
+async function attendanceCalculation(subject) {
+
+    const result =
+        await api(
+            `/api/attendance/calculate?subject=${encodeURIComponent(subject)}`
+        );
+
+    alert(result.message);
+}
+
+
+/* ============================================================
+   ASSIGNMENTS
+============================================================ */
+
+function openAssignmentModal() {
+
+    fillSubjectSelects();
+
+    document.getElementById("assignmentTitle").value = "";
+
+    document.getElementById("assignmentDescription").value = "";
+
+    document.getElementById("assignmentDue").value =
+        today_date_local();
+
+    openModal("assignmentModal");
+}
+
+
+async function saveAssignment() {
+
+    const item = {
+
+        title:
+            document.getElementById("assignmentTitle").value,
+
+        subject:
+            document.getElementById("assignmentSubject").value,
+
+        description:
+            document.getElementById("assignmentDescription").value,
+
+        due_date:
+            document.getElementById("assignmentDue").value,
+
+        priority:
+            document.getElementById("assignmentPriority").value,
+
+        status: "Pending"
+    };
+
+
+    if (!item.title.trim()) {
+
+        alert("Enter assignment title.");
+
+        return;
+    }
+
+
+    await api("/api/assignments", {
+
+        method: "POST",
+
+        body: JSON.stringify(item)
+    });
+
+
+    closeModal("assignmentModal");
+
+    await loadAssignments();
+
+    await loadDashboard();
+}
+
+
+async function loadAssignments() {
+
+    const assignments =
+        await api("/api/assignments");
+
+    const container =
+        document.getElementById("assignmentCards");
+
+
+    if (!assignments.length) {
+
+        container.innerHTML = `
+            <div class="card empty">
+                No assignments yet.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        assignments.map(item => {
+
+            const completed =
+                item.status === "Completed";
+
+            return `
+
+                <div class="card">
+
+                    <div style="display:flex;justify-content:space-between;gap:10px">
+
+                        <strong>
+                            ${escapeHtml(item.title)}
+                        </strong>
+
+                        <span class="badge ${
+                            item.priority === "High"
+                                ? "badge-red"
+                                : item.priority === "Medium"
+                                    ? "badge-yellow"
+                                    : "badge-blue"
+                        }">
+                            ${item.priority}
+                        </span>
+
+                    </div>
+
+
+                    <p class="small muted">
+                        ${escapeHtml(item.subject)}
+                    </p>
+
+
+                    <p>
+                        ${escapeHtml(item.description || "No description")}
+                    </p>
+
+
+                    <div class="small muted">
+                        Due: ${item.due_date || "No date"}
+                    </div>
+
+                    <br>
+
+
+                    <div class="actions">
+
+                        <button
+                            class="btn ${
+                                completed
+                                    ? "btn-warning"
+                                    : "btn-success"
+                            }"
+                            onclick="toggleAssignment(${item.id}, ${!completed})"
+                        >
+                            ${
+                                completed
+                                    ? "Mark Pending"
+                                    : "Mark Completed"
+                            }
+                        </button>
+
+
+                        <button
+                            class="btn btn-danger"
+                            onclick="deleteAssignment(${item.id})"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }).join("");
+}
+
+
+async function toggleAssignment(id, completed) {
+
+    await api(
+        `/api/assignments/${id}`,
+        {
+            method: "PUT",
+            body: JSON.stringify({
+                status:
+                    completed
+                        ? "Completed"
+                        : "Pending"
+            })
+        }
+    );
+
+    await loadAssignments();
+
+    await loadDashboard();
+}
+
+
+async function deleteAssignment(id) {
+
+    if (!confirm("Delete assignment?")) {
+        return;
+    }
+
+    await api(
+        `/api/assignments/${id}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+    await loadAssignments();
+
+    await loadDashboard();
+}
+
+
+/* ============================================================
+   EXAMS
+============================================================ */
+
+function openExamModal() {
+
+    fillSubjectSelects();
+
+    document.getElementById("examName").value = "";
+
+    document.getElementById("examDate").value =
+        today_date_local();
+
+    document.getElementById("examTime").value = "";
+
+    document.getElementById("examVenue").value = "";
+
+    document.getElementById("examNotes").value = "";
+
+    openModal("examModal");
+}
+
+
+async function saveExam() {
+
+    const item = {
+
+        name:
+            document.getElementById("examName").value,
+
+        subject:
+            document.getElementById("examSubject").value,
+
+        date:
+            document.getElementById("examDate").value,
+
+        time:
+            document.getElementById("examTime").value,
+
+        venue:
+            document.getElementById("examVenue").value,
+
+        notes:
+            document.getElementById("examNotes").value
+    };
+
+
+    if (!item.subject) {
+
+        alert("Select a subject.");
+
+        return;
+    }
+
+
+    await api("/api/exams", {
+
+        method: "POST",
+
+        body: JSON.stringify(item)
+    });
+
+
+    closeModal("examModal");
+
+    await loadExams();
+
+    await loadDashboard();
+}
+
+
+async function loadExams() {
+
+    const exams =
+        await api("/api/exams");
+
+    const container =
+        document.getElementById("examCards");
+
+
+    if (!exams.length) {
+
+        container.innerHTML = `
+            <div class="card empty">
+                No exams added yet.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        exams
+            .sort(
+                (a,b) =>
+                    a.date.localeCompare(b.date)
+            )
+            .map(exam => `
+
+                <div class="card">
+
+                    <div style="font-size:25px">
+                        🧪
+                    </div>
+
+                    <h3 style="margin:8px 0">
+                        ${escapeHtml(exam.subject)}
+                    </h3>
+
+                    <p class="muted">
+                        ${escapeHtml(exam.name)}
+                    </p>
+
+                    <p>
+                        📅 ${exam.date}
+                    </p>
+
+                    <p>
+                        ⏰ ${exam.time || "Time not set"}
+                    </p>
+
+                    <p>
+                        📍 ${escapeHtml(exam.venue || "Venue not set")}
+                    </p>
+
+                    ${
+                        exam.notes
+                            ? `<p class="small muted">${escapeHtml(exam.notes)}</p>`
+                            : ""
+                    }
+
+                    <button
+                        class="btn btn-danger"
+                        onclick="deleteExam(${exam.id})"
+                    >
+                        Delete
+                    </button>
+
+                </div>
+
+            `).join("");
+}
+
+
+async function deleteExam(id) {
+
+    if (!confirm("Delete exam?")) {
+        return;
+    }
+
+    await api(
+        `/api/exams/${id}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+    await loadExams();
+
+    await loadDashboard();
+}
+
+
+/* ============================================================
+   MATERIALS
+============================================================ */
+
+function openMaterialModal() {
+
+    fillSubjectSelects();
+
+    document.getElementById("materialName").value = "";
+
+    document.getElementById("materialUrl").value = "";
+
+    openModal("materialModal");
+}
+
+
+async function saveMaterial() {
+
+    const item = {
+
+        name:
+            document.getElementById("materialName").value,
+
+        subject:
+            document.getElementById("materialSubject").value,
+
+        type:
+            document.getElementById("materialType").value,
+
+        url:
+            document.getElementById("materialUrl").value
+    };
+
+
+    if (!item.name.trim()) {
+
+        alert("Enter material name.");
+
+        return;
+    }
+
+
+    await api("/api/materials", {
+
+        method: "POST",
+
+        body: JSON.stringify(item)
+    });
+
+
+    closeModal("materialModal");
+
+    await loadMaterials();
+}
+
+
+async function loadMaterials() {
+
+    const materials =
+        await api("/api/materials");
+
+    const container =
+        document.getElementById("materialCards");
+
+
+    if (!materials.length) {
+
+        container.innerHTML = `
+            <div class="card empty">
+                No study materials yet.
+            </div>
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        materials.map(item => `
+
+            <div class="card">
+
+                <div style="font-size:28px">
+                    📚
+                </div>
+
+                <h3>
+                    ${escapeHtml(item.name)}
+                </h3>
+
+                <div class="small muted">
+                    ${escapeHtml(item.subject)}
+                    • ${escapeHtml(item.type)}
+                </div>
+
+                ${
+                    item.url
+                        ? `
+                            <br>
+
+                            <a
+                                href="${escapeAttr(item.url)}"
+                                target="_blank"
+                            >
+                                Open Resource
+                            </a>
+                        `
+                        : ""
+                }
+
+                <br><br>
+
+                <button
+                    class="btn btn-danger"
+                    onclick="deleteMaterial(${item.id})"
+                >
+                    Delete
+                </button>
+
+            </div>
+
+        `).join("");
+}
+
+
+async function deleteMaterial(id) {
+
+    await api(
+        `/api/materials/${id}`,
+        {
+            method: "DELETE"
+        }
+    );
+
+    await loadMaterials();
+}
+
+
+/* ============================================================
+   AI CHAT
+============================================================ */
+
+async function loadChat() {
+
+    const messages =
+        await api("/api/chat");
+
+    const box =
+        document.getElementById("chatBox");
+
+    if (!messages.length) {
+
+        box.innerHTML = `
+
+            <div
+                style="
+                    text-align:center;
+                    padding:80px 20px;
+                "
+            >
+
+                <div style="font-size:50px">
+                    🤖
+                </div>
+
+                <h2>
+                    Hi! I'm your SmartStudy AI tutor.
+                </h2>
+
+                <p class="muted">
+                    Ask me about C, exams, assignments,
+                    attendance, timetable or study plans.
+                </p>
+
+            </div>
+
+        `;
+
+        return;
+    }
+
+
+    box.innerHTML =
+        messages.map(item => `
+
+            <div class="message ${item.role === "user" ? "user" : "ai"}">
+
+                <div
+                    class="bubble"
+                    ondblclick="${
+                        item.role === "assistant"
+                            ? `speakText(${JSON.stringify(item.content)})`
+                            : ""
+                    }"
+                >
+                    ${escapeHtml(item.content)}
+                </div>
+
+            </div>
+
+        `).join("");
+
+    box.scrollTop = box.scrollHeight;
+}
+
+
+function handleChatKey(event) {
+
+    if (
+        event.key === "Enter" &&
+        !event.shiftKey
+    ) {
+
+        event.preventDefault();
+
+        sendChat();
+    }
+}
+
+
+async function sendChat() {
+
+    const input =
+        document.getElementById("chatInput");
+
+    const message =
+        input.value.trim();
+
+    if (!message) {
+        return;
+    }
+
+    input.value = "";
+
+    addTemporaryUserMessage(message);
+
+    const box =
+        document.getElementById("chatBox");
+
+    box.innerHTML += `
+
+        <div class="message ai">
+
+            <div class="bubble">
+
+                <div class="typing">
+
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+    box.scrollTop = box.scrollHeight;
+
+
+    try {
+
+        const result =
+            await api("/api/chat", {
+
+                method: "POST",
+
+                body: JSON.stringify({
+                    message
+                })
+            });
+
+
+        await loadChat();
+
+        speakText(result.answer);
+
+    } catch (error) {
+
+        await loadChat();
+
+        alert(error.message);
+    }
+}
+
+
+function addTemporaryUserMessage(message) {
+
+    const box =
+        document.getElementById("chatBox");
+
+    const div =
+        document.createElement("div");
+
+    div.className =
+        "message user";
+
+    div.innerHTML = `
+        <div class="bubble">
+            ${escapeHtml(message)}
+        </div>
+    `;
+
+    box.appendChild(div);
+
+    box.scrollTop =
+        box.scrollHeight;
+}
+
+
+async function sendQuickAI() {
+
+    const input =
+        document.getElementById("quickAIInput");
+
+    const message =
+        input.value.trim();
+
+    if (!message) {
+        return;
+    }
+
+    input.value = "";
+
+    showPage(
+        "ai",
+        document.querySelector(
+            '.nav-btn[onclick*="showPage(\'ai\'"]'
+        )
+    );
+
+    document.getElementById("chatInput").value =
+        message;
+
+    await sendChat();
+}
+
+
+async function clearChat() {
+
+    await api("/api/chat/clear", {
+        method: "POST"
+    });
+
+    await loadChat();
+}
+
+
+/* ============================================================
+   AI STUDY PLAN
+============================================================ */
+
+async function generateStudyPlan() {
+
+    showPage("ai");
+
+    const box =
+        document.getElementById("chatBox");
+
+    box.innerHTML = `
+
+        <div class="message ai">
+
+            <div class="bubble">
+
+                <div class="typing">
+
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `;
+
+
+    const result =
+        await api("/api/ai/study-plan", {
+            method: "POST"
+        });
+
+
+    await loadChat();
+
+    /*
+       The plan endpoint does not store itself in chat,
+       so show it directly.
+    */
+
+    box.innerHTML += `
+
+        <div class="message ai">
+
+            <div
+                class="bubble"
+                ondblclick='speakText(${JSON.stringify(result.answer)})'
+            >
+                ${escapeHtml(result.answer)}
+            </div>
+
+        </div>
+    `;
+
+    box.scrollTop =
+        box.scrollHeight;
+}
+
+
+/* ============================================================
+   AI MCQ
+============================================================ */
+
+async function generateMCQ() {
+
+    showPage("ai");
+
+    const subject =
+        subjects.length
+            ? subjects[0].name
+            : "C Programming";
+
+
+    const result =
+        await api("/api/ai/mcqs", {
+
+            method: "POST",
+
+            body: JSON.stringify({
+                subject
+            })
+        });
+
+
+    const box =
+        document.getElementById("chatBox");
+
+
+    box.innerHTML += `
+
+        <div class="message ai">
+
+            <div
+                class="bubble"
+                ondblclick='speakText(${JSON.stringify(result.answer)})'
+            >
+                ${escapeHtml(result.answer)}
+            </div>
+
+        </div>
+    `;
+
+    box.scrollTop =
+        box.scrollHeight;
+}
+
+
+/* ============================================================
+   VOICE
+============================================================ */
+
+function startVoiceInput() {
+
+    const SpeechRecognition =
+        window.SpeechRecognition ||
+        window.webkitSpeechRecognition;
+
+
+    if (!SpeechRecognition) {
+
+        alert(
+            "Voice input is not supported by this browser. Try Chrome."
+        );
+
+        return;
+    }
+
+
+    recognition =
+        new SpeechRecognition();
+
+    recognition.lang =
+        "en-IN";
+
+    recognition.interimResults =
+        false;
+
+    recognition.continuous =
+        false;
+
+
+    recognition.onresult =
+        function(event) {
+
+            const text =
+                event.results[0][0].transcript;
+
+            document.getElementById("chatInput").value =
+                text;
+
+            sendChat();
+        };
+
+
+    recognition.onerror =
+        function() {
+
+            alert("Voice input failed. Please try again.");
+        };
+
+
+    recognition.start();
+}
+
+
+function speakText(text) {
+
+    if (!window.speechSynthesis) {
+        return;
+    }
+
+    window.speechSynthesis.cancel();
+
+    const utterance =
+        new SpeechSynthesisUtterance(text);
+
+    utterance.lang =
+        "en-IN";
+
+    utterance.rate =
+        0.95;
+
+    window.speechSynthesis.speak(
+        utterance
+    );
+}
+
+
+/* ============================================================
+   RESET
+============================================================ */
+
+async function resetApplication() {
+
+    const ok =
+        confirm(
+            "This will delete your timetable, attendance, assignments, exams and AI chat. Continue?"
+        );
+
+    if (!ok) {
+        return;
+    }
+
+
+    await api("/api/reset", {
+        method: "POST"
+    });
+
+
+    location.reload();
+}
+
+
+/* ============================================================
+   HELPERS
+============================================================ */
+
+function escapeHtml(value) {
+
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    return String(value)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+function escapeAttr(value) {
+
+    return escapeHtml(value);
+}
+
+</script>
+
+</body>
+</html>
