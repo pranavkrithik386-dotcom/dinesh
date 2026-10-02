@@ -997,12 +997,13 @@ if __name__ == "__main__":
         "API KEY LOADED:",
         bool(os.getenv("GROQ_API_KEY"))
     )
-    print("Open: http://127.0.0.1:5000")
     print("=" * 55)
     print()
 
+    port = int(os.environ.get("PORT", 5000))
+
     app.run(
-        host="127.0.0.1",
-        port=5000,
-        debug=True
+        host="0.0.0.0",
+        port=port,
+        debug=False
     )
